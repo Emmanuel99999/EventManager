@@ -1,30 +1,31 @@
 ﻿@page "/eventmanager"
 @rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
 
 <PageTitle>Event Manager</PageTitle>
 
-<h3>Component</h3>
+<h3>Event Manager</h3>
 
-<EditForm Model="@newEvent" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@newEvent" OnValidSubmit="HandleValidSubmit" class="event-form">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div>
+    <div class="form-group">
         <label for="eventName">Event Name:</label>
-        <InputText id="eventName" @bind-Value="newEvent.Name" />
-        <span class="text-danger" style="display: @(string.IsNullOrEmpty(newEvent.Name) ? "block" : "none")">Event Name is required</span>
+        <InputText id="eventName" @bind-Value="newEvent.Name" class="form-control" />
+        <ValidationMessage For="@(() => newEvent.Name)" class="text-danger" />
     </div>
-    <div>
+    <div class="form-group">
         <label for="eventDate">Event Date:</label>
-        <InputDate id="eventDate" @bind-Value="newEvent.Date" />
-        <span class="text-danger" style="display: @(newEvent.Date == default ? "block" : "none")">Event Date is required</span>
+        <InputDate id="eventDate" @bind-Value="newEvent.Date" class="form-control" />
+        <ValidationMessage For="@(() => newEvent.Date)" class="text-danger" />
     </div>
-    <div>
+    <div class="form-group">
         <label for="eventLocation">Event Location:</label>
-        <InputText id="eventLocation" @bind-Value="newEvent.Location" />
-        <span class="text-danger" style="display: @(string.IsNullOrEmpty(newEvent.Location) ? "block" : "none")">Event Location is required</span>
+        <InputText id="eventLocation" @bind-Value="newEvent.Location" class="form-control" />
+        <ValidationMessage For="@(() => newEvent.Location)" class="text-danger" />
     </div>
-    <button type="submit">Register Event</button>
+    <button type="submit" class="btn btn-primary">Register Event</button>
 </EditForm>
 
 @code {
@@ -43,12 +44,19 @@
 
     public class Event
     {
-        public string Name { get; set; }
-        public DateTime Date { get; set; }
-        public string Location { get; set; }
-    }
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters.")]
+        public string Name { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Date is required.")]
+        public DateTime Date { get; set; } = DateTime.Today;
+
+        [Required(ErrorMessage = "Location is required.")]
+        [StringLength(50, ErrorMessage = "Location cannot exceed 50 characters.")]
+        public string Location { get; set; } = string.Empty;    
+    }
 }
+
 <h3>Event List</h3>
 <div class="event-list">
     @if (events != null && events.Any())
@@ -69,15 +77,44 @@
 </div>
 
 <style>
+    .event-form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
     .event-list {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
+        margin-top: 2rem;
     }
     .event-card {
         border: 1px solid #ccc;
         padding: 1rem;
         border-radius: 5px;
         width: 200px;
+        background-color: #fff;
     }
 </style>
